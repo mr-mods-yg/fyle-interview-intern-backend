@@ -1,10 +1,12 @@
 import enum
 from core import db
+from core.apis import assignments
 from core.apis.decorators import AuthPrincipal
 from core.libs import helpers, assertions
 from core.models.teachers import Teacher
 from core.models.students import Student
 from sqlalchemy.types import Enum as BaseEnum
+from sqlalchemy import or_
 
 
 class GradeEnum(str, enum.Enum):
@@ -91,3 +93,8 @@ class Assignment(db.Model):
     @classmethod
     def get_assignments_by_teacher(cls):
         return cls.query.all()
+    
+    @classmethod
+    def get_assignments_submitted_graded(cls):
+        return cls.filter(or_(cls.state == AssignmentStateEnum.GRADED,
+                              cls.state == AssignmentStateEnum.SUBMITTED)).all()
